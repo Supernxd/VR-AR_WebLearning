@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>HomeLight</title>
+  </head>
+  <body>
+    <script src="https://unpkg.com/three@0.122.0/build/three.js"></script>
+    <script>
+      const width = window.innerWidth
+      const height = window.innerHeight
+      // 添加渲染器
+      const renderer = new THREE.WebGLRenderer()
+      renderer.setSize(width, height)
+      renderer.setPixelRatio( window.devicePixelRatio )
+      // 开启阴影选项
+      renderer.shadowMap.enabled = true
+      renderer.shadowMap.type = THREE.PCFSoftShadowMap
+
+      document.body.appendChild(renderer.domElement)
+
+      // 定义相机
+      const camera = new THREE.PerspectiveCamera(45, width / height, 1, 500)
+      camera.position.set(0, 10, -10)
+      camera.lookAt(0,2,0)
+
+      // 定义场景
+      const scene = new THREE.Scene()
+
+      // 环境光
+      const light = new THREE.AmbientLight( 0x404040 )
+      scene.add( light )
+
+      // 定义吊灯 及 灯光
+      const spotLight = new THREE.SpotLight(0xffffff, 1, 25)
+      spotLight.position.set(4, 10, 0)
+      spotLight.angle = Math.PI / 6      
+      spotLight.castShadow = true
+
+      scene.add( spotLight )     
+
+      
+      // 定义房间 阴影显示
+
+      const planeGeometry = new THREE.PlaneBufferGeometry(20, 20, 32, 32)
+      const planeMaterial = new THREE.MeshStandardMaterial({ color: 0x808080, dithering: true })
+      const plane = new THREE.Mesh( planeGeometry, planeMaterial)
+      plane.rotation.x = - Math.PI * 0.5;
+      plane.receiveShadow = true
+      plane.position.set(0, 0, 0)
+      scene.add( plane )
+
+      // 定义房间内的球体 正方体 圆锥体
+      const cubeGeometry = new THREE.BoxGeometry()
+      const cubMaterial = new THREE.MeshStandardMaterial({ color: 0xff0000, dithering: true })
+      const cube = new THREE.Mesh(cubeGeometry, cubMaterial)
+      cube.castShadow = true
+      cube.receiveShadow = true
+      cube.position.set(1, 0.5, -1)
+
+      scene.add( cube )
+
+      const sphereGeometry = new THREE.SphereGeometry( 2, 32, 32 );
+      const sphereMaterial = new THREE.MeshStandardMaterial({ color: 0xff0000, dithering: true });
+      const sphere = new THREE.Mesh( sphereGeometry, sphereMaterial );
+      sphere.castShadow = true
+      sphere.receiveShadow = true
+      sphere.position.set(3.5, 2, -1)
+      scene.add( sphere );
+
+      // 辅助
+      const spotLightHelper = new THREE.SpotLightHelper( spotLight );
+      scene.add( spotLightHelper );
+      
+      const box = new THREE.BoxHelper( plane, 0xffff00 );
+      scene.add( box );
+
+      // 吊灯摇晃 渲染
+
+      renderer.render(scene, camera)
+    </script>
+  </body>
+</html>
